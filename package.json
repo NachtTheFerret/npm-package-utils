@@ -1,8 +1,11 @@
 {
   "name": "@natchy/utils",
   "version": "0.0.1",
-  "private": true,
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Natto-PKP/npm-package-nacht-utils.git"
+  },
   "scripts": {
     "build": "npx tsc",
     "prepublish": "npm run build",
