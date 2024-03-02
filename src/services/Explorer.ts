@@ -259,7 +259,7 @@ export class Explorer {
    * console.log(content);
    * ```
    */
-  static async import(to: string, prop?: string): Promise<unknown> {
+  static async import(to: string, prop?: string): Promise<any> {
     const t = Explorer.absolute(to);
     if (!Explorer.exists(t)) throw new Error(`The path "${t}" does not exist.`);
     if (!fs.lstatSync(t).isFile()) throw new Error(`The path "${t}" is not a file.`);
