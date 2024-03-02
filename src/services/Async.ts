@@ -18,7 +18,7 @@ export class Async {
    * console.log(result); // 6
    * ```
    */
-  static async each<T>(array: T[], callback: (item: T, index: number, array: T[]) => void | Promise<void>) {
+  static async each<T>(array: T[], callback: (item: T, index: number, array: T[]) => unknown | Promise<unknown>) {
     for (let index = 0; index < array.length; index++) {
       await callback(array[index], index, array);
     }
@@ -40,7 +40,7 @@ export class Async {
    * console.log(result); // 6
    * ```
    */
-  static async parallel<T>(array: T[], callback: (item: T, index: number, array: T[]) => void | Promise<void>) {
+  static async parallel<T>(array: T[], callback: (item: T, index: number, array: T[]) => unknown | Promise<unknown>) {
     await Async.map(array, callback);
   }
 
