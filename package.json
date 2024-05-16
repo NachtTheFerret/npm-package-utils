@@ -12,7 +12,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/Natto-PKP/npm-package-nacht-utils.git"
+    "url": "https://github.com/Natto-PKP/npm-package-utils.git"
   },
   "scripts": {
     "build": "npx tsc",
