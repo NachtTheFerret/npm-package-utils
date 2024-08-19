@@ -149,3 +149,25 @@ describe('Text.case', () => {
     expect(Text.case('Hello World', 'Title Case', 'CONSTANT_CASE')).toBe('HELLO_WORLD');
   });
 });
+
+describe('Text.random', () => {
+  it('should generate a random string with the specified length', () => {
+    expect(Text.random(10)).toHaveLength(10);
+  });
+
+  it('should generate a random string with the specified length and type', () => {
+    expect(Text.random(10, 'base64')).toMatch(/^[A-Za-z0-9+/]{10}$/);
+    expect(Text.random(10, 'hex')).toMatch(/^[0-9a-f]{10}$/);
+    expect(Text.random(10, ['letter'])).toMatch(/^[A-Za-z]{10}$/);
+    expect(Text.random(10, ['number'])).toMatch(/^[0-9]{10}$/);
+    expect(Text.random(10, ['special'])).toMatch(/^[!@#$%^&*()_+]{10}$/);
+  });
+});
+
+describe('Text.plularize', () => {
+  it('should pluralize the text', () => {
+    expect(Text.pluralize('apple', 1)).toBe('apple');
+    expect(Text.pluralize('apple', 2)).toBe('apples');
+    expect(Text.pluralize('apple', 0)).toBe('apples');
+  });
+});

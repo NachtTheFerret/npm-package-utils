@@ -1,6 +1,19 @@
 export type TextCase = 'camelCase' | 'snake_case' | 'kebab-case' | 'PascalCase' | 'CONSTANT_CASE' | 'Title Case';
+export type TextRandomType = (keyof typeof chars)[] | 'hex' | 'base64';
+
+const chars = {
+  letter: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+  number: '0123456789',
+  special: '!@#$%^&*()_+{}:"<>?|[]\\;\',./`~',
+};
 
 export class Text {
+  /**
+   * Replace variables in the text with the values from the object
+   * @param text The text to replace the variables in
+   * @param variables The object with the variables to replace
+   * @returns The text with the variables replaced
+   */
   static var(text: string, variables?: Record<string, any>) {
     if (!variables) return text;
 
@@ -13,6 +26,11 @@ export class Text {
     });
   }
 
+  /**
+   * Add capital letters for each word in the text
+   * @param text The text to capitalize
+   * @returns The capitalized text
+   */
   static capitalize(text: string, eachWord = false): string {
     if (eachWord) {
       const words = text.split(' ');
@@ -20,6 +38,13 @@ export class Text {
     } else return text.charAt(0).toUpperCase() + text.slice(1);
   }
 
+  /**
+   * Convert the text from one case to another
+   * @param text The text to convert
+   * @param from The current case of the text
+   * @param to The case to convert the text to
+   * @returns The converted text
+   */
   static case(text: string, from: TextCase, to: TextCase) {
     const txt = text.trim();
     if (from === to) return txt;
@@ -72,5 +97,42 @@ export class Text {
     }
 
     return txt;
+  }
+
+  /**
+   * Generate a random string with the specified length and type
+   * @param length The length of the random string
+   * @param type The type of the random string (hex, base64, letter, number, special)
+   * @returns The random string
+   */
+  static random(length = 8, type: TextRandomType = 'base64') {
+    if (type === 'hex') return Array.from({ length }, () => Math.floor(Math.random() * 16).toString(16)).join('');
+
+    if (type === 'base64') {
+      const pool = chars.letter + chars.number + '+/';
+      return Array.from({ length }, () => pool[Math.floor(Math.random() * pool.length)]).join('');
+    }
+
+    const pool = type.reduce((acc, key) => acc + chars[key], '');
+    return Array.from({ length }, () => pool[Math.floor(Math.random() * pool.length)]).join('');
+  }
+
+  /**
+   * Pluralize the text based on the count
+   * @param text The text to pluralize
+   * @param count The count to determine if the text should be pluralized
+   * @returns The pluralized text
+   */
+  static pluralize(text: string, count: number) {
+    return count === 1 ? text : text + 's';
+  }
+
+  /**
+   * Remove the variables from the text
+   * @param text The text to remove the variables from
+   * @returns The text without the variables
+   */
+  static unvar(text: string) {
+    return text.replace(/{([^}]+)}/g, '');
   }
 }
