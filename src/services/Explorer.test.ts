@@ -138,19 +138,19 @@ describe('Explorer.from', () => {
   });
 });
 
-describe('Explorer.getFolder', () => {
+describe('Explorer.folder', () => {
   it('should get the folder of a file', () => {
-    const folder = Explorer.getFolder('folder/file_a.txt');
+    const folder = Explorer.folder('folder/file_a.txt');
     expect(folder.name).toBe('folder');
   });
 
   it('should get the folder of another folder', () => {
-    const folder = Explorer.getFolder('folder/folder_a');
+    const folder = Explorer.folder('folder/folder_a');
     expect(folder.name).toBe('folder');
   });
 
   it('should throw an error if the path does not exist', () => {
-    expect(() => Explorer.getFolder('unknown')).toThrow();
+    expect(() => Explorer.folder('unknown')).toThrow();
   });
 });
 

@@ -207,8 +207,9 @@ export class Explorer {
    * console.log(exists);
    * ```
    */
-  static exists(to: string) {
-    return fs.existsSync(Explorer.absolute(to));
+  static exists(to: string | Element) {
+    const t = typeof to === 'string' ? to : to.path;
+    return fs.existsSync(Explorer.absolute(t));
   }
 
   /**
@@ -221,11 +222,13 @@ export class Explorer {
    * Explorer.write('/home/user/file.txt', 'Hello, world!');
    * ```
    */
-  static write(to: string, content: string, encoding: BufferEncoding = 'utf-8') {
-    const t = Explorer.absolute(to);
+  static write(to: string | File, content: string, encoding: BufferEncoding = 'utf-8') {
+    const _t = typeof to === 'string' ? to : to.path;
+    const t = Explorer.absolute(_t);
+
     if (Explorer.exists(t) && !fs.lstatSync(t).isFile()) throw new Error(`The path "${t}" is not a file.`);
 
-    fs.writeFileSync(to, content, encoding);
+    fs.writeFileSync(t, content, encoding);
   }
 
   /**
@@ -236,8 +239,9 @@ export class Explorer {
    * Explorer.delete('/home/user/file.txt');
    * ```
    */
-  static delete(to: string) {
-    const t = Explorer.absolute(to);
+  static delete(to: string | Element) {
+    const _t = typeof to === 'string' ? to : to.path;
+    const t = Explorer.absolute(_t);
     if (!Explorer.exists(t)) throw new Error(`The path "${t}" does not exist.`);
 
     fs.unlinkSync(t);
@@ -259,8 +263,10 @@ export class Explorer {
    * console.log(content);
    * ```
    */
-  static async import(to: string, prop?: string): Promise<any> {
-    const t = Explorer.absolute(to);
+  static async import(to: string | File, prop?: string): Promise<any> {
+    const _t = typeof to === 'string' ? to : to.path;
+    const t = Explorer.absolute(_t);
+
     if (!Explorer.exists(t)) throw new Error(`The path "${t}" does not exist.`);
     if (!fs.lstatSync(t).isFile()) throw new Error(`The path "${t}" is not a file.`);
 
@@ -278,8 +284,10 @@ export class Explorer {
    * console.log(element);
    * ```
    */
-  static from(to: string): Element {
-    const t = Explorer.absolute(to);
+  static from(to: string | Element): Element {
+    const _t = typeof to === 'string' ? to : to.path;
+    const t = Explorer.absolute(_t);
+
     if (!fs.existsSync(t)) throw new Error(`The path "${t}" does not exist.`);
 
     const element = {
@@ -317,7 +325,7 @@ export class Explorer {
    * console.log(folder);
    * ```
    */
-  static getFolder(from: string | File): Folder {
+  static folder(from: string | Element): Folder {
     const p = typeof from === 'string' ? from : from.path;
     const t = Explorer.absolute(p);
     if (!fs.existsSync(t)) throw new Error(`The path "${t}" does not exist.`);
@@ -347,8 +355,9 @@ export class Explorer {
    * console.log(absolute); // /home/user/file.txt
    * ```
    */
-  static absolute(to: string) {
-    return path.isAbsolute(to) ? to : path.resolve(process.cwd(), to);
+  static absolute(to: string | Element): string {
+    const t = typeof to === 'string' ? to : to.path;
+    return path.isAbsolute(t) ? t : path.resolve(t);
   }
 
   /**
@@ -361,7 +370,7 @@ export class Explorer {
    * Explorer.duplicate('/home/user/file.txt', '/home/user/file_copy.txt');
    * ```
    */
-  static duplicate(from: string, to: string) {
+  static duplicate(from: string | File, to: string | File) {
     const f = Explorer.absolute(from);
     const t = Explorer.absolute(to);
     if (!Explorer.exists(f)) throw new Error(`The path "${f}" does not exist.`);
@@ -379,12 +388,74 @@ export class Explorer {
    * Explorer.move('/home/user/file.txt', '/home/user/folder/file.txt');
    * ```
    */
-  static move(from: string, to: string) {
+  static move(from: string | File, to: string | File) {
     const f = Explorer.absolute(from);
     const t = Explorer.absolute(to);
     if (!Explorer.exists(f)) throw new Error(`The path "${f}" does not exist.`);
     if (Explorer.exists(t)) throw new Error(`The path "${t}" already exists.`);
 
     fs.renameSync(f, t);
+  }
+
+  /**
+   * Create a file or a folder
+   * @param type - The type of the element
+   * @param to - The path to the file or folder
+   * @example
+   * ```ts
+   * Explorer.create('FOLDER', '/home/user/folder');
+   * ```
+   * @example
+   * ```ts
+   * Explorer.create('FILE', '/home/user/file.txt');
+   * ```
+   */
+  static create(type: 'FOLDER' | 'FILE', to: string | Element) {
+    const t = typeof to === 'string' ? to : to.path;
+    const p = Explorer.absolute(t);
+
+    if (Explorer.exists(p)) throw new Error(`The path "${p}" already exists.`);
+    if (type === 'FOLDER') fs.mkdirSync(p);
+    if (type === 'FILE') fs.writeFileSync(p, '');
+  }
+
+  /**
+   * Rename a file or a folder
+   * @param from - The path to the file or folder
+   * @param to - The path to the file or folder
+   * @example
+   * ```ts
+   * Explorer.rename('/home/user/file.txt', '/home/user/file_copy.txt');
+   * ```
+   */
+  static rename(from: string | Element, to: string | Element) {
+    const f = typeof from === 'string' ? from : from.path;
+    const t = typeof to === 'string' ? to : to.path;
+    const p = Explorer.absolute(f);
+    const q = Explorer.absolute(t);
+
+    if (!Explorer.exists(p)) throw new Error(`The path "${p}" does not exist.`);
+    if (Explorer.exists(q)) throw new Error(`The path "${q}" already exists.`);
+
+    fs.renameSync(p, q);
+  }
+
+  /**
+   * Get the statistics of a file or a folder
+   * @param to - The path to the file or folder
+   * @returns
+   * @example
+   * ```ts
+   * const stats = Explorer.stat('/home/user/file.txt');
+   * console.log(stats);
+   * ```
+   */
+  static stat(to: string | Element) {
+    const t = typeof to === 'string' ? to : to.path;
+    const p = Explorer.absolute(t);
+
+    if (!Explorer.exists(p)) throw new Error(`The path "${p}" does not exist.`);
+
+    return fs.statSync(p);
   }
 }
