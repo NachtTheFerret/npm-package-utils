@@ -1,4 +1,4 @@
-import { Async } from './Async';
+import { Async } from '../services/Async';
 
 type Result<R> = R | Promise<R>;
 
